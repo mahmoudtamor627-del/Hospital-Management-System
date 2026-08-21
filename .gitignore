@@ -1,0 +1,15 @@
+# Compiled binaries & object files
+*.exe
+*.out
+*.o
+*.obj
+
+# IDE & Editor files
+.vscode/
+.vs/
+*.layout
+*.depend
+
+# Build directories
+build/
+bin/
