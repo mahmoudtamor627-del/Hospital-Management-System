@@ -68,12 +68,26 @@ public:
     void admitPatient(RoomType type);
     void dischargePatient();
 
-    void addMedicalRecord(string record);
+    void addMedicalRecord(string record) {
+    medicalHistory.push(record);
+}
 
     void requestTest(string testName);
     string performTest();
 
-    void displayHistory();
+    void displayHistory() {
+    stack<string> temp = medicalHistory;
+    if (temp.empty()) {
+        cout << "No medical records found.\n";
+        return;
+    }
+    cout << "Medical History for " << name << ":\n";
+
+    while (!temp.empty()) {
+        cout << "- " << temp.top() << endl;
+        temp.pop();
+    }
+}
 
     int getId();
     string getName();
@@ -216,9 +230,15 @@ public:
     // Find Patient
     // ===================================================== //
 
-    Patient* findPatient(
-        int patientId
-    );
+    Patient* findPatient(int patientId) {
+    for (Patient& patient : patients) {
+        if (patient.getId() == patientId) {
+            return &patient;
+        }
+    }
+
+    return nullptr;
+}
 
 
     // =====================================================
@@ -226,9 +246,15 @@ public:
     // Find Doctor
     // ===================================================== //
 
-    Doctor* findDoctor(
-        int doctorId
-    );
+    Doctor* findDoctor(int doctorId) {
+    for (Doctor& doctor : doctors) {
+        if (doctor.getId() == doctorId) {
+            return &doctor;
+        }
+    }
+
+    return nullptr;
+}
 
 
     // =====================================================
@@ -236,9 +262,25 @@ public:
     // Search Patient By Name
     // ===================================================== //
 
-    void searchPatientByName(
-        string name
-    );
+    void searchPatientByName(string name) {
+    bool found = false;
+
+    for (Patient& patient : patients) {
+        if (patient.getName() == name) {
+            cout << "Patient Found:\n";
+            cout << "ID: " << patient.getId() << endl;
+            cout << "Name: " << patient.getName() << endl;
+            cout << "Age: " << patient.getAge() << endl;
+            cout << "Contact: " << patient.getContact() << endl;
+
+            found = true;
+        }
+    }
+
+    if (!found) {
+        cout << "No patient found with name: " << name << endl;
+    }
+}
 
 
     // =====================================================
