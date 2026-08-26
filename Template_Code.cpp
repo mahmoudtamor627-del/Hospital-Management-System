@@ -737,7 +737,56 @@ void Hospital::doctorSeePatient(int doctorId) {
     }
 }
 
+// =====================================================
+// REQUIRED DEPENDENCY FOR TEST FEATURES
+// =====================================================
+Patient* Hospital::findPatient(int patientId) {
+    for (size_t i = 0; i < patients.size(); i++) {
+        if (patients[i].getId() == patientId) {
+            return &patients[i];
+        }
+    }
+    return nullptr;
+}
 
+// =====================================================
+// ACCEPTANCE CRITERIA: HOSPITAL TEST METHODS
+// =====================================================
+
+void Hospital::requestPatientTest(int patientId, string testName) {
+    Patient* patient = findPatient(patientId);
+    if (patient == nullptr) {
+        cout << "Patient with ID " << patientId << " not found." << endl;
+        return;
+    }
+    patient->requestTest(testName);
+    cout << "Test '" << testName << "' requested for patient " << patientId << "." << endl;
+}
+
+void Hospital::performPatientTest(int patientId) {
+    Patient* patient = findPatient(patientId);
+    if (patient == nullptr) {
+        cout << "Patient with ID " << patientId << " not found." << endl;
+        return;
+    }
+    
+    string result = patient->performTest();
+    if (result == "No tests pending") {
+        cout << "No tests pending for patient " << patientId << "." << endl;
+    } else {
+        cout << "Test '" << result << "' performed for patient " << patientId << "." << endl;
+    }
+}
+
+void Hospital::displayPatientTests(int patientId) {
+    Patient* patient = findPatient(patientId);
+    if (patient == nullptr) {
+        cout << "Patient with ID " << patientId << " not found." << endl;
+        return;
+    }
+    cout << "Pending tests for patient " << patientId << ":" << endl;
+    patient->displayPendingTests();
+}
 // ========== MAIN PROGRAM ========== //
 int main() {
 
