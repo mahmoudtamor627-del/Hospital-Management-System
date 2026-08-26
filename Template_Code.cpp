@@ -30,13 +30,20 @@ private:
     int severity;
 
 public:
-    EmergencyCase(int pid, int s);
+    EmergencyCase(int pid, int s)
+    {
+        patientId = pid;
+        severity = s;
+    }
 
-    int getPatientId() const;
-    int getSeverity() const;
+
+    int getPatientId() const { return patientId; }
+    int getSeverity() const { return severity; }
 
     // Higher severity = higher priority
-    bool operator<(const EmergencyCase& other) const;
+    bool operator<(const EmergencyCase& other) const {
+        return severity < other.severity;
+    }
 };
 
 
@@ -166,7 +173,7 @@ private:
 
 
 public:
-
+   
     // Constructor
     Hospital();
 
@@ -191,11 +198,18 @@ public:
         RoomType type
     );
 
-    void addEmergency(
-        int patientId
-    );
+    void addEmergency(int patientId)
+    {
+        emergencyQueue.push(patientId);
+    }
 
-    int handleEmergency();
+    int handleEmergency()
+    {
+        if (emergencyQueue.empty()) return -1;
+        int patientId = emergencyQueue.front();
+        emergencyQueue.pop();
+        return patientId;
+    }
 
     void bookAppointment(
         int doctorId,
@@ -318,10 +332,15 @@ public:
     // Priority Emergency
     // ===================================================== //
 
-    void addPriorityEmergency(
-        int patientId,
-        int severity
-    );
+    void addPriorityEmergency(int patientId, int severity)
+    {
+        if (severity < 1 || severity > 5)
+        {
+        cout << "Invalid severity.Must be between 1 and 5." << endl;
+        return;
+        }
+        priorityEmergencyQueue.push(EmergencyCase(patientId, severity));
+    }
 
 
     // =====================================================
@@ -329,7 +348,13 @@ public:
     // Handle Priority Emergency
     // ===================================================== //
 
-    int handlePriorityEmergency();
+    int handlePriorityEmergency()
+    {
+        if (priorityEmergencyQueue.empty()) return -1;
+        EmergencyCase top = priorityEmergencyQueue.top();
+        priorityEmergencyQueue.pop();
+        return top.getPatientId();
+    }
 
 
     // =====================================================
