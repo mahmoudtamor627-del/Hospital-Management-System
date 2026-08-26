@@ -405,6 +405,192 @@ public:
     void displayStatistics();
 };
 
+string departmentToString(Department department) {
+    switch (department) {
+    case CARDIOLOGY:
+        return "Cardiology";
+    case NEUROLOGY:
+        return "Neurology";
+    case ORTHOPEDICS:
+        return "Orthopedics";
+    case PEDIATRICS:
+        return "Pediatrics";
+    case EMERGENCY:
+        return "Emergency";
+    case GENERAL:
+    default:
+        return "General";
+    }
+}
+
+Doctor::Doctor(int did, string n, Department d) {
+    id = did;
+    name = n;
+    department = d;
+}
+
+void Doctor::addAppointment(int patientId) {
+    appointmentQueue.push(patientId);
+}
+
+int Doctor::seePatient() {
+    if (appointmentQueue.empty()) {
+        return -1;
+    }
+
+    int patientId = appointmentQueue.front();
+    appointmentQueue.pop();
+    return patientId;
+}
+
+int Doctor::getId() {
+    return id;
+}
+
+string Doctor::getName() {
+    return name;
+}
+
+string Doctor::getDepartment() {
+    return departmentToString(department);
+}
+
+void Doctor::displayAppointments() {
+    if (appointmentQueue.empty()) {
+        cout << "No appointments available." << endl;
+        return;
+    }
+
+    queue<int> tempQueue = appointmentQueue;
+
+    cout << "Appointments for Dr. " << name << ":" << endl;
+    while (!tempQueue.empty()) {
+        cout << "Patient ID: " << tempQueue.front() << endl;
+        tempQueue.pop();
+    }
+}
+
+void Doctor::cancelAppointment(int patientId) {
+    if (appointmentQueue.empty()) {
+        cout << "No appointments available." << endl;
+        return;
+    }
+
+    queue<int> tempQueue;
+    bool found = false;
+
+    while (!appointmentQueue.empty()) {
+        int currentPatientId = appointmentQueue.front();
+        appointmentQueue.pop();
+
+        if (currentPatientId == patientId && !found) {
+            found = true;
+        }
+        else {
+            tempQueue.push(currentPatientId);
+        }
+    }
+
+    appointmentQueue = tempQueue;
+
+    if (found) {
+        cout << "Appointment cancelled successfully." << endl;
+    }
+    else {
+        cout << "Appointment not found." << endl;
+    }
+}
+
+int Doctor::getAppointmentCount() {
+    return static_cast<int>(appointmentQueue.size());
+}
+
+int Hospital::addDoctor(string name, Department dept) {
+    int doctorId = doctorCounter;
+    doctors.push_back(Doctor(doctorId, name, dept));
+    doctorCounter++;
+    return doctorId;
+}
+
+Doctor* Hospital::findDoctor(int doctorId) {
+    for (Doctor& doctor : doctors) {
+        if (doctor.getId() == doctorId) {
+            return &doctor;
+        }
+    }
+
+    return nullptr;
+}
+
+void Hospital::bookAppointment(int doctorId, int patientId) {
+    Doctor* doctor = findDoctor(doctorId);
+    if (doctor == nullptr) {
+        cout << "Doctor with ID " << doctorId << " not found." << endl;
+        return;
+    }
+
+    Patient* patient = findPatient(patientId);
+    if (patient == nullptr) {
+        cout << "Patient with ID " << patientId << " not found." << endl;
+        return;
+    }
+
+    doctor->addAppointment(patientId);
+    cout << "Appointment booked for patient " << patientId
+        << " with doctor " << doctorId << endl;
+}
+
+void Hospital::displayDoctorInfo(int doctorId) {
+    Doctor* doctor = findDoctor(doctorId);
+    if (doctor == nullptr) {
+        cout << "Doctor with ID " << doctorId << " not found." << endl;
+        return;
+    }
+
+    cout << "Doctor Information:" << endl;
+    cout << "ID: " << doctor->getId() << endl;
+    cout << "Name: " << doctor->getName() << endl;
+    cout << "Department: " << doctor->getDepartment() << endl;
+    cout << "Waiting Patients: " << doctor->getAppointmentCount() << endl;
+}
+
+void Hospital::displayDoctorAppointments(int doctorId) {
+    Doctor* doctor = findDoctor(doctorId);
+    if (doctor == nullptr) {
+        cout << "Doctor with ID " << doctorId << " not found." << endl;
+        return;
+    }
+
+    doctor->displayAppointments();
+}
+
+void Hospital::cancelAppointment(int doctorId, int patientId) {
+    Doctor* doctor = findDoctor(doctorId);
+    if (doctor == nullptr) {
+        cout << "Doctor with ID " << doctorId << " not found." << endl;
+        return;
+    }
+
+    doctor->cancelAppointment(patientId);
+}
+
+void Hospital::doctorSeePatient(int doctorId) {
+    Doctor* doctor = findDoctor(doctorId);
+    if (doctor == nullptr) {
+        cout << "Doctor with ID " << doctorId << " not found." << endl;
+        return;
+    }
+
+    int patientId = doctor->seePatient();
+    if (patientId == -1) {
+        cout << "No patients waiting." << endl;
+    }
+    else {
+        cout << "Doctor " << doctor->getName()
+            << " is now seeing patient " << patientId << endl;
+    }
+}
+
 
 // ========== MAIN PROGRAM ========== //
 int main() {
